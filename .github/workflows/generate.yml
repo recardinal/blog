@@ -1,13 +1,18 @@
-name: Rust
+name: generate blog from issues 
 
 on:
+  issues:
+    types: [opened, edited]
   push:
-    branches: [ main ]
+    branches: [ main ],
+    paths: [ src/** ]
   pull_request:
     branches: [ main ]
 
 env:
   CARGO_TERM_COLOR: always
+  NAME: recardinal
+  EMAIL: recardinal@outlook.com
 
 jobs:
   build:
@@ -16,9 +21,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: generate
-      run: cargo run
-#     - name: Build
-#       run: cargo build --verbose
-#     - name: Run tests
-#       run: cargo test --verbose
+      run: cargo run ${{ secret.GE }} ${{ github.repository }} ${{ github.event.issue.number }}
+
+    - name: push
+    - run: |
+        git config --local user.name "${{ env.NAME }}"
+        git config --local user.email "${{ env.EMAIL }}"
+        git commit -a -m 'generate new blog' || echo "还什么都没有哦"
+        git push || echo "还什么都没有哦"
