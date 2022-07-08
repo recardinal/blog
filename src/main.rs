@@ -71,6 +71,7 @@ async fn handle_issues() -> octocrab::Result<()> {
     let issues = octocrab
         .issues(&user.login, &repo_name)
         .list()
+        .creator(&user.login)
         .send()
         .await?;
 
