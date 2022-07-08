@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: generate
-        run: cargo run ${{ secret.GE }} ${{ github.repository }} ${{ github.event.issue.number }}
+        run: cargo run ${{ secrets.GE }} ${{ github.repository }} ${{ github.event.issue.number }}
 
       - name: push
         run: |
