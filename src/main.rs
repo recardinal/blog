@@ -116,6 +116,8 @@ async fn handle_issues() -> octocrab::Result<()> {
             .collect()
     };
 
+    println!("{:#?}", issues_alter);
+
     // 写入新的 issues 信息
     let new_generate_info_json = serde_json::to_string(&issues_alter).unwrap();
 
@@ -125,8 +127,6 @@ async fn handle_issues() -> octocrab::Result<()> {
         Err(why) => println!("fail to write new issues info: {}", why),
         Ok(_) => println!("write new issues info success!"),
     };
-
-    println!("{:#?}", issues_to_generate);
 
     // 生成md
     for issue in issues_to_generate {
