@@ -93,7 +93,7 @@ async fn handle_issues() -> octocrab::Result<()> {
         })
         .collect();
 
-    // 获取要生成 md 的 issue
+    // 当前已生成 md 的 issue
     let current_generate_info = get_generate_issues();
 
     let current_generate_info_map: HashSet<models::IssueId> = current_generate_info
