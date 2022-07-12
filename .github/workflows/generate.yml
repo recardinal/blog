@@ -5,7 +5,7 @@ on:
     types: [opened, edited]
   push:
     branches: [main]
-    paths: [src/**]
+    paths: [src/**, .github/workflows/generate.yml]
   pull_request:
     branches: [main]
 
@@ -36,7 +36,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "lts/*"
-          cache: "yarn"
 
       - name: build static
         run: |
