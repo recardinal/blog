@@ -47,4 +47,4 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GE }},
-          folder: ./out
+          folder: ./website/out
