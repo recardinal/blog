@@ -10,8 +10,8 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
-const BASE_PATH: &str = "website/pages/blog";
-const GENERATE: &str = "website/pages/blog/generate_info.json";
+const BASE_PATH: &str = "website/pages/post";
+const GENERATE: &str = "website/pages/post/generate_info.json";
 
 #[tokio::main]
 async fn main() -> octocrab::Result<()> {

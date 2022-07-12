@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: "/blog",
   pageExtensions: ["jsx", "js", "ts", "tsx", "mdx", "md"],
   reactStrictMode: true,
   swcMinify: true,

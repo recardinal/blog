@@ -22,13 +22,13 @@ const Home: NextPage<{ blogs: BlogInfo[] }> = ({ blogs }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div>
+      <ul>
         {blogs.map(({ title, id }) => (
-          <Link key={id} href={`/blog/${title}`}>
-            {title}
-          </Link>
+          <li key={id}>
+            <Link href={`/post/${title}`}>{title}</Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 };
