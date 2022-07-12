@@ -13,14 +13,13 @@ env:
   CARGO_TERM_COLOR: always
   NAME: recardinal
   EMAIL: recardinal@outlook.com
-  ASSET: ./asset
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: generate
         run: cargo run ${{ secrets.GE }} blog ${{ github.event.issue.number }}
@@ -29,6 +28,24 @@ jobs:
         run: |
           git config --local user.name "${{ env.NAME }}"
           git config --local user.email "${{ env.EMAIL }}"
-          git add ${{ env.ASSET }}
+          git add .
           git commit -a -m 'generate blog' || echo "还什么都没有哦"
           git push || echo "还什么都没有哦"
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          cache: "yarn"
+
+      - name: build static
+        run: |
+          cd website/
+          yarn install
+          yarn build:static
+
+      - name: gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GE }},
+          publish_dir: ./out

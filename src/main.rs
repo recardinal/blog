@@ -10,8 +10,8 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
-const BASE_PATH: &str = "asset";
-const GENERATE: &str = "asset/generate_info.json";
+const BASE_PATH: &str = "website/pages/blog";
+const GENERATE: &str = "website/pages/blog/generate_info.json";
 
 #[tokio::main]
 async fn main() -> octocrab::Result<()> {
@@ -80,7 +80,7 @@ async fn handle_issues() -> octocrab::Result<()> {
         .into_iter()
         .map(|issue| IssueAlter {
             id: issue.id,
-            title: issue.title,
+            title: issue.title.replace(" ", "-"),
             number: issue.number,
             labels: issue
                 .labels
