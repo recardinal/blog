@@ -5,7 +5,7 @@ on:
     types: [opened, edited]
   push:
     branches: [main]
-    paths: [src/**, .github/workflows/generate.yml]
+    paths: [src/**, website/**, .github/workflows/generate.yml]
   pull_request:
     branches: [main]
 
