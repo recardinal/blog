@@ -1,0 +1,134 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/27d177a30947857b.css" as="style"/><link rel="stylesheet" href="/_next/static/css/27d177a30947857b.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-0d1b80a048d4787e.js"></script><script src="/_next/static/chunks/webpack-34c76af51fb9f015.js" defer=""></script><script src="/_next/static/chunks/framework-ae4f43955bfa5ddc.js" defer=""></script><script src="/_next/static/chunks/main-127cedfe15d7e754.js" defer=""></script><script src="/_next/static/chunks/pages/_app-77ff40da4b27b71c.js" defer=""></script><script src="/_next/static/chunks/pages/blog/2.%20Programming%20a%20Guessing%20Game-308eeda3772bf92a.js" defer=""></script><script src="/_next/static/TX0kV2sQDJNh-LIE3zwZ-/_buildManifest.js" defer=""></script><script src="/_next/static/TX0kV2sQDJNh-LIE3zwZ-/_ssgManifest.js" defer=""></script></head><body><div id="__next"><p><a href="https://doc.rust-lang.org/book/ch02-00-guessing-game-tutorial.html">https://doc.rust-lang.org/book/ch02-00-guessing-game-tutorial.html</a>
+写一个猜谜游戏，生成一个 0-100 的随机数，提示玩家输入一个猜测数。</p>
+<h2>初始化项目</h2>
+<p>运行命令行：</p>
+<pre><code class="language-shell">$ cargo new guessing_game
+$ cd guessing_game
+</code></pre>
+<h2>处理输入的数</h2>
+<p>猜谜游戏的第一步是要求玩家输入一个数
+文件 <em>src/main.rs</em>：</p>
+<pre><code class="language-rust">// 为了读取用户输入以及输出结果，需要 io (input/output) 库
+// io 在 standard 库中，被称为 std
+// 默认 rust 只会加载少量类型到作用域
+use std::io;
+
+fn main() {
+    // `println!`是一个`macro`
+    println!(&quot;Guess the number!&quot;);
+    
+    println!(&quot;Please input your guess.&quot;);
+
+    // `guess`用来存储用户的输入
+    // 在rust中，变量默认是不可变的（immutable）
+    // `mut` -&gt; mutable 使变量可变
+    // `String:new`返回一个`String`实例
+    // `std`提供的可增长的，utf8编码的 string 类型
+    // `::`表示`new`是`String`的一个关联函数
+    // 关联函数在类型上实现，在这里时`String`类型，而不是一个特定实例
+    // 有些语言称这个为静态方法
+    let mut guess = String::new();
+
+    // 如果移除`use std::io`，可以写成`std::io::stdin`
+    // `stdin`函数返回了一个`std::io::Stdin`的实例
+    // `read_line` https://doc.rust-lang.org/std/io/struct.Stdin.html#method.read_line
+    // `&amp;`表明参数是一个`reference`，访问数据而无需复制数据到内存中
+    // `reference`也是默认 immutable，需要`mut`
+    io::stdin()
+        .read_line(&amp;mut guess)
+        .expect(&quot;Failed to read line&quot;);
+
+    println!(&quot;You guessed: {}&quot;, guess);
+}
+</code></pre>
+<h3>用 Result 类型处理潜在失败</h3>
+<pre><code class="language-rust">io::stdin().read_line(&amp;mut guess).expect(&quot;Failed to read line&quot;);
+</code></pre>
+<p><code>read_line</code>将用户的输入放到 string 中，同时也返回一个值，在这个例子是<a href="https://doc.rust-lang.org/std/io/type.Result.html"><code>io::Result</code></a>。
+rust 标准库中有许多叫<code>Result</code>的类型：通用的<a href="https://doc.rust-lang.org/std/result/enum.Result.html"><code>Result</code></a>以及子模块的具体版本，如<code>io::Result</code>
+<code>Result</code>是<a href="https://doc.rust-lang.org/book/ch06-00-enums.html">enumerations</a>，一般称为<code>enums</code>。
+对于<code>Result</code>，值是<code>Ok</code>或者<code>Err</code>。<code>Ok</code>代表操作成功，包含在<code>Ok(...)</code>中的就是成功生成的值，<code>Err</code>相反，会包含失败的方式和原因。
+<code>Result</code>类型的目的是编码错误处理信息。<code>io::Result</code>的实例有一个<a href="https://doc.rust-lang.org/std/result/enum.Result.html#method.expect"><code>expect</code></a>方法，如果实例是一个<code>Err</code>值，<code>expect</code>会促使程序崩溃并显示传递给它的参数；如果是一个<code>Ok</code>，<code>expect</code>会取到<code>Ok</code>包含的值并返回。在这个例子中，这个值是用户输入到标准输入中的字节数。
+如果没有调用<code>expect</code>，程序会变异但是会抛出一个警告：</p>
+<pre><code class="language-shell">$ cargo build
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+warning: unused `std::result::Result` that must be used
+  --&gt; src/main.rs:10:5
+   |
+10 |     io::stdin().read_line(&amp;mut guess);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_must_use)]` on by default
+   = note: this `Result` may be an `Err` variant, which should be handled
+
+warning: 1 warning emitted
+
+    Finished dev [unoptimized + debuginfo] target(s) in 0.59s
+</code></pre>
+<p>rust 会警告未使用<code>read_line</code>返回的<code>Result</code>，表明没有处理可能的错误。</p>
+<h3>使用 println! 占位符打印值</h3>
+<pre><code class="language-rust">// {} 是一个占位，也可以打印多个值 println!(&quot;x = {} and y = {}&quot;, x, y);
+println!(&quot;You guessed: {}&quot;, guess);
+</code></pre>
+<h3>测试第一部分</h3>
+<pre><code class="language-shell">$ cargo run
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished dev [unoptimized + debuginfo] target(s) in 6.44s
+     Running `target/debug/guessing_game`
+Guess the number!
+Please input your guess.
+6
+You guessed: 6
+</code></pre>
+<h2>生成一个随机数作为猜谜</h2>
+<p>接下来需要生成一个随机数，rust team 提供了一个<a href="https://crates.io/crates/rand"><code>rand</code></a> crate。</p>
+<h3>使用 crate 获得更多功能</h3>
+<p><a href="https://crates.io/">https://crates.io/</a>
+在 <em>Cargo.toml</em> 中添加：</p>
+<pre><code class="language-toml">[dependencies]
+rand = &quot;0.8.3&quot;
+</code></pre>
+<p>重新构建：</p>
+<pre><code class="language-shell">$ cargo build
+   Compiling cfg-if v1.0.0
+   Compiling ppv-lite86 v0.2.10
+   Compiling libc v0.2.94
+   Compiling getrandom v0.1.16
+   Compiling rand_core v0.5.1
+   Compiling rand_chacha v0.2.2
+   Compiling rand v0.8.3
+   Compiling guessing_game v0.1.0 (/Users/recardinal/Desktop/rust/projects/guessing_game)
+    Finished dev [unoptimized + debuginfo] target(s) in 3.35s
+</code></pre>
+<h3>Cargo.lock实现可复用的构建</h3>
+<p>当第一次构建项目时，Cargo 会找出相符的依赖项版本写入 <em>Cargo.lock</em>。再次构建时，Cargo 会使用 <em>Cargo.lock</em> 中指定的版本而不是再次寻找版本，直到升级依赖版本。</p>
+<h3>升级 crate 版本</h3>
+<pre><code class="language-shell">$ cargo update
+</code></pre>
+<p>如果想要指定的版本，修改 <em>Cargo.toml</em>：</p>
+<pre><code class="language-toml">[dependencies]
+rand = &quot;0.9.0&quot;
+</code></pre>
+<h3>生成随机数</h3>
+<p>现在已经将 <code>rand</code> 添加到了 <em>Cargo.toml</em> , 下一步是编写 <em>src/main.rs</em>:</p>
+<pre><code class="language-rust">use std::io;
+use rand::Rng;
+
+fn main() {
+    println!(&quot;Guess the number!&quot;);
+
+    let secret_number = rand::thread_rng().gen_range(1..101);
+
+    println!(&quot;The secret number is: {}&quot;, secret_number);
+
+    println!(&quot;Please input your guess.&quot;);
+
+    let mut guess = String::new();
+
+    io::stdin()
+        .read_line(&amp;mut guess)
+        .expect(&quot;Failed to read line&quot;);
+
+    println!(&quot;You guessed: {}&quot;, guess);
+}
+</code></pre></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{}},"page":"/blog/2. Programming a Guessing Game","query":{},"buildId":"TX0kV2sQDJNh-LIE3zwZ-","nextExport":true,"autoExport":true,"isFallback":false,"scriptLoader":[]}</script></body></html>
