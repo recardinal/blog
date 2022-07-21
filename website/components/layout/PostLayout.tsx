@@ -1,7 +1,7 @@
 import React from 'react';
 
 import PostSiderBar from './sidebar/PostSiderbar';
-import Toc from './TOC';
+import Toc from './Toc';
 
 import type { Headings } from '~/types/common';
 
