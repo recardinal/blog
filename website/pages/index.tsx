@@ -1,17 +1,11 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
+import type { NextPage } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
+import { usePostInfo } from '~/providers/postInfo';
 
-import blogs from "./post/generate_info.json";
+const Home: NextPage = () => {
+  const [{ posts }] = usePostInfo();
 
-interface BlogInfo {
-  id: number;
-  title: string;
-  number: number;
-  labels: { id: number; name: string }[];
-}
-
-const Home: NextPage<{ blogs: BlogInfo[] }> = ({ blogs }) => {
   return (
     <div>
       <Head>
@@ -21,9 +15,9 @@ const Home: NextPage<{ blogs: BlogInfo[] }> = ({ blogs }) => {
       </Head>
 
       <ul>
-        {blogs.map(({ title, id }) => (
-          <li key={id}>
-            <Link href={`/post/${title}`}>{title}</Link>
+        {posts.map(({ title, route, id }) => (
+          <li key={id} className="text-lg">
+            <Link href={`/post/${route}`}>{title}</Link>
           </li>
         ))}
       </ul>
@@ -31,10 +25,8 @@ const Home: NextPage<{ blogs: BlogInfo[] }> = ({ blogs }) => {
   );
 };
 
-export function getStaticProps() {
-  return {
-    props: { blogs },
-  };
-}
-
 export default Home;
+
+export const myCustomProps = {
+  nmsl: 'nmsl',
+};
